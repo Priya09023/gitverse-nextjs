@@ -4,7 +4,10 @@ import { requireAuth, isHttpError , sanitizeError } from "@/lib/middleware";
 import { analysisJobService } from "@/lib/services/analysisJobService";
 
 const MAX_KICK_ENTRIES = 1000;
-const lastKickAtByJobId = new Map<string, number>();
+if (lastKickAtByJobId.size >= MAX_KICK_ENTRIES) {
+  const firstKey = lastKickAtByJobId.keys().next().value;
+  lastKickAtByJobId.delete(firstKey);
+}
 
 function kickLocalRunner(request: NextRequest, jobId: string) {
   if (process.env.NODE_ENV === "production") return;
